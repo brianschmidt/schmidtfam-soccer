@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>LMFC Memorial Day Weekend Plan — May 23–24, 2026</title>
 <style>
   :root {
@@ -19,13 +20,14 @@
     --bg: #f7f8fa;
   }
   * { box-sizing: border-box; }
+  html { font-size: 17px; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     color: var(--ink);
     background: var(--bg);
     margin: 0;
-    padding: 32px 20px 64px;
-    line-height: 1.5;
+    padding: 24px 16px 56px;
+    line-height: 1.55;
   }
   .wrap { max-width: 880px; margin: 0 auto; }
   header {
@@ -34,25 +36,26 @@
     margin-bottom: 28px;
   }
   h1 {
-    font-size: 28px;
-    margin: 0 0 4px;
+    font-size: 1.6rem;
+    margin: 0 0 6px;
     letter-spacing: -0.5px;
+    line-height: 1.2;
   }
-  .subtitle { color: var(--muted); font-size: 15px; margin: 0; }
+  .subtitle { color: var(--muted); font-size: 0.88rem; margin: 0; }
   h2 {
-    font-size: 20px;
+    font-size: 1.2rem;
     margin: 36px 0 14px;
     padding-bottom: 6px;
     border-bottom: 1px solid var(--line);
   }
-  h3 { font-size: 15px; margin: 0 0 6px; }
+  h3 { font-size: 1rem; margin: 0 0 6px; }
   .legend {
     display: flex; gap: 12px; flex-wrap: wrap;
-    margin: 16px 0 0; font-size: 13px;
+    margin: 16px 0 0; font-size: 0.85rem;
   }
   .chip {
     display: inline-flex; align-items: center; gap: 6px;
-    padding: 4px 10px; border-radius: 999px; font-weight: 600;
+    padding: 5px 12px; border-radius: 999px; font-weight: 600;
   }
   .chip.girls { background: var(--girls-bg); color: var(--girls); }
   .chip.boys { background: var(--boys-bg); color: var(--boys); }
@@ -61,25 +64,24 @@
   .alert {
     background: var(--alert-bg);
     border-left: 4px solid var(--alert);
-    padding: 14px 16px;
+    padding: 16px;
     border-radius: 6px;
     margin: 20px 0;
   }
-  .alert h3 { color: var(--alert); margin-bottom: 4px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
-  .alert p { margin: 0; font-size: 14px; }
+  .alert h3 { color: var(--alert); margin-bottom: 6px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; }
+  .alert p { margin: 0; font-size: 0.95rem; }
 
   .timeline {
-    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
     margin: 16px 0 0;
-    padding-left: 28px;
-    border-left: 2px solid var(--line);
   }
   .event {
     position: relative;
-    margin-bottom: 18px;
     background: white;
-    border-radius: 8px;
-    padding: 12px 16px;
+    border-radius: 10px;
+    padding: 14px 16px;
     box-shadow: 0 1px 2px rgba(0,0,0,0.04);
     border: 1px solid var(--line);
   }
@@ -92,6 +94,7 @@
     border-radius: 50%;
     background: white;
     border: 3px solid var(--ink);
+    display: none;
   }
   .event.girls { border-left: 4px solid var(--girls); }
   .event.girls::before { border-color: var(--girls); }
@@ -102,27 +105,48 @@
   .event.prep { background: #f1f3f5; }
   .event.prep::before { border-color: var(--muted); }
 
+  .event > div:first-child {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
   .event-time {
-    font-weight: 700; font-size: 14px; color: var(--ink);
-    display: inline-block; margin-right: 8px;
+    font-weight: 700; font-size: 1.05rem; color: var(--ink);
   }
   .event-tag {
     display: inline-block;
-    font-size: 11px; font-weight: 700;
-    padding: 2px 8px; border-radius: 4px;
+    font-size: 0.7rem; font-weight: 700;
+    padding: 3px 8px; border-radius: 4px;
     text-transform: uppercase; letter-spacing: 0.5px;
-    vertical-align: middle;
   }
   .event-tag.girls { background: var(--girls-bg); color: var(--girls); }
   .event-tag.boys { background: var(--boys-bg); color: var(--boys); }
   .event-tag.travel { background: #fff3e0; color: #e65100; }
   .event-tag.prep { background: #e9ecef; color: var(--muted); }
-  .event-title { font-weight: 600; margin-top: 4px; font-size: 15px; }
-  .event-detail { color: var(--muted); font-size: 13px; margin-top: 2px; }
+  .event-title { font-weight: 600; margin-top: 6px; font-size: 1rem; line-height: 1.35; }
+  .event-detail { color: var(--muted); font-size: 0.88rem; margin-top: 6px; line-height: 1.5; }
+
+  .event-detail span, .event-detail a { display: block; }
+  .ev-where { color: var(--ink); font-weight: 600; }
+  .ev-where strong {
+    background: var(--line);
+    color: var(--ink);
+    padding: 1px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+  .ev-addr {
+    margin-top: 4px;
+    padding: 6px 0;
+    color: var(--boys);
+    text-decoration: none;
+  }
+  .ev-note { margin-top: 4px; font-style: italic; }
 
   .venues {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 16px;
     margin-top: 16px;
   }
@@ -132,10 +156,18 @@
     border-radius: 8px;
     padding: 14px 16px;
   }
-  .venue h3 { margin-bottom: 6px; font-size: 15px; }
-  .venue .addr { font-size: 13px; color: var(--muted); margin: 0 0 8px; }
-  .venue ul { margin: 0; padding-left: 18px; font-size: 13px; }
-  .venue a { color: var(--boys); text-decoration: none; font-size: 13px; }
+  .venue h3 { margin-bottom: 6px; font-size: 1rem; }
+  .venue .addr { font-size: 0.88rem; color: var(--muted); margin: 0 0 8px; }
+  .venue ul { margin: 0; padding-left: 18px; font-size: 0.88rem; }
+  .venue ul li { margin-bottom: 4px; }
+  .venue a {
+    color: var(--boys);
+    text-decoration: none;
+    font-size: 0.94rem;
+    display: inline-block;
+    padding: 6px 0;
+    min-height: 44px;
+  }
 
   .checklist {
     background: white;
@@ -144,19 +176,26 @@
     padding: 14px 18px;
     margin-top: 12px;
   }
-  .checklist ul { margin: 0; padding-left: 18px; }
-  .checklist li { margin-bottom: 4px; font-size: 14px; }
+  .checklist ul { margin: 0; padding-left: 20px; }
+  .checklist li { margin-bottom: 7px; font-size: 0.94rem; }
 
   .note {
-    font-size: 12px;
+    font-size: 0.82rem;
     color: var(--muted);
     font-style: italic;
     margin-top: 10px;
   }
 
-  @media (max-width: 600px) {
-    .venues { grid-template-columns: 1fr; }
-    h1 { font-size: 22px; }
+  @media (min-width: 700px) {
+    html { font-size: 16px; }
+    body { padding: 32px 20px 64px; }
+    h1 { font-size: 1.75rem; }
+    .venues { grid-template-columns: 1fr 1fr; }
+    .timeline {
+      padding-left: 28px;
+      border-left: 2px solid var(--line);
+    }
+    .event::before { display: block; }
   }
   @media print {
     body { background: white; padding: 0; }
@@ -205,13 +244,21 @@
   <div class="event boys">
     <div><span class="event-time">8:00 AM</span><span class="event-tag boys">Max — Game 1</span></div>
     <div class="event-title">vs BWP Albany BWP Football Academy (U14s / 2012s)</div>
-    <div class="event-detail">GCVSA Line Road Complex — <strong>Field 3</strong> &middot; 137 Line Road, Malvern, PA &middot; You will not be there — check in with Simon for the result.</div>
+    <div class="event-detail">
+      <span class="ev-where">GCVSA Line Road Complex — <strong>Field 3</strong></span>
+      <a class="ev-addr" href="https://www.google.com/maps/dir/?api=1&amp;destination=137+Line+Road+Malvern+PA+19355" target="_blank" rel="noopener">137 Line Road, Malvern, PA</a>
+      <span class="ev-note">You will not be there — check in with Simon for the result.</span>
+    </div>
   </div>
 
   <div class="event girls">
     <div><span class="event-time">9:15 AM</span><span class="event-tag girls">Sofia — Game 1</span></div>
     <div class="event-title">vs FC DELCO Black Conshy '14 (G) — 9v9</div>
-    <div class="event-detail">United Sports — <strong>Field 01B</strong> &middot; 1426 Marshallton Thorndale Rd, Downingtown, PA &middot; Arrive ~8:30 AM for warm-up.</div>
+    <div class="event-detail">
+      <span class="ev-where">United Sports — <strong>Field 01B</strong></span>
+      <a class="ev-addr" href="https://www.google.com/maps/dir/?api=1&amp;destination=1426+Marshallton+Thorndale+Rd+Downingtown+PA+19335" target="_blank" rel="noopener">1426 Marshallton Thorndale Rd, Downingtown, PA</a>
+      <span class="ev-note">Arrive ~8:30 AM for warm-up.</span>
+    </div>
   </div>
 
   <div class="event travel">
@@ -223,7 +270,10 @@
   <div class="event boys">
     <div><span class="event-time">1:00 PM</span><span class="event-tag boys">Max — Game 2</span></div>
     <div class="event-title">vs STA Mount Olive Soccer Club (STA MOSC 2012 EDP Boys)</div>
-    <div class="event-detail">GCVSA Line Road Complex — <strong>Field 4</strong> &middot; 137 Line Road, Malvern, PA</div>
+    <div class="event-detail">
+      <span class="ev-where">GCVSA Line Road Complex — <strong>Field 4</strong></span>
+      <a class="ev-addr" href="https://www.google.com/maps/dir/?api=1&amp;destination=137+Line+Road+Malvern+PA+19355" target="_blank" rel="noopener">137 Line Road, Malvern, PA</a>
+    </div>
   </div>
 
   <div class="event travel">
@@ -235,7 +285,10 @@
   <div class="event girls">
     <div><span class="event-time">3:30 PM</span><span class="event-tag girls">Sofia — Game 2</span></div>
     <div class="event-title">vs South Parkland Youth Phoenix 2014</div>
-    <div class="event-detail">United Sports — <strong>Field 02B</strong> &middot; 1426 Marshallton Thorndale Rd, Downingtown, PA</div>
+    <div class="event-detail">
+      <span class="ev-where">United Sports — <strong>Field 02B</strong></span>
+      <a class="ev-addr" href="https://www.google.com/maps/dir/?api=1&amp;destination=1426+Marshallton+Thorndale+Rd+Downingtown+PA+19335" target="_blank" rel="noopener">1426 Marshallton Thorndale Rd, Downingtown, PA</a>
+    </div>
   </div>
 
   <div class="event prep">
@@ -258,7 +311,10 @@
   <div class="event boys">
     <div><span class="event-time">9:15 AM</span><span class="event-tag boys">Max — Game 3</span></div>
     <div class="event-title">vs LVU Rush ECNL-RL B12</div>
-    <div class="event-detail">GCVSA Line Road Complex — <strong>Field 4</strong> &middot; 137 Line Road, Malvern, PA</div>
+    <div class="event-detail">
+      <span class="ev-where">GCVSA Line Road Complex — <strong>Field 4</strong></span>
+      <a class="ev-addr" href="https://www.google.com/maps/dir/?api=1&amp;destination=137+Line+Road+Malvern+PA+19355" target="_blank" rel="noopener">137 Line Road, Malvern, PA</a>
+    </div>
   </div>
 
   <div class="event travel">
@@ -270,7 +326,10 @@
   <div class="event girls">
     <div><span class="event-time">11:45 AM</span><span class="event-tag girls">Sofia — Game 3</span></div>
     <div class="event-title">vs Manhattan SC Arsenal White 2014</div>
-    <div class="event-detail">United Sports — <strong>Dome Field 02A</strong> (indoor) &middot; 1426 Marshallton Thorndale Rd, Downingtown, PA</div>
+    <div class="event-detail">
+      <span class="ev-where">United Sports — <strong>Dome Field 02A</strong> (indoor)</span>
+      <a class="ev-addr" href="https://www.google.com/maps/dir/?api=1&amp;destination=1426+Marshallton+Thorndale+Rd+Downingtown+PA+19335" target="_blank" rel="noopener">1426 Marshallton Thorndale Rd, Downingtown, PA</a>
+    </div>
   </div>
 
   <div class="event prep">
@@ -283,8 +342,8 @@
 <h2>Venues</h2>
 <div class="venues">
   <div class="venue" style="border-top: 3px solid var(--girls);">
-    <h3>United Sports Training Center <span style="color: var(--girls); font-size: 12px;">(Sofia)</span></h3>
-    <p class="addr">1426 Marshallton Thorndale Rd, Downingtown, PA 19335</p>
+    <h3>United Sports Training Center <span style="color: var(--girls); font-size: 0.8rem;">(Sofia)</span></h3>
+    <p class="addr"><a href="https://www.google.com/maps/dir/?api=1&amp;destination=1426+Marshallton+Thorndale+Rd+Downingtown+PA+19335" target="_blank" rel="noopener">1426 Marshallton Thorndale Rd, Downingtown, PA 19335</a></p>
     <ul>
       <li>Field 01B — Sat 9:15 AM</li>
       <li>Field 02B — Sat 3:30 PM</li>
@@ -292,8 +351,8 @@
     </ul>
   </div>
   <div class="venue" style="border-top: 3px solid var(--boys);">
-    <h3>GCVSA Line Road Complex <span style="color: var(--boys); font-size: 12px;">(Max)</span></h3>
-    <p class="addr">137 Line Road, Malvern, PA 19355</p>
+    <h3>GCVSA Line Road Complex <span style="color: var(--boys); font-size: 0.8rem;">(Max)</span></h3>
+    <p class="addr"><a href="https://www.google.com/maps/dir/?api=1&amp;destination=137+Line+Road+Malvern+PA+19355" target="_blank" rel="noopener">137 Line Road, Malvern, PA 19355</a></p>
     <ul>
       <li>Field 3 — Sat 8:00 AM</li>
       <li>Field 4 — Sat 1:00 PM</li>
