@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>LMFC Memorial Day Weekend Plan — May 23–24, 2026</title>
+<style>
+  :root {
+    --girls: #c2185b;
+    --girls-bg: #fce4ec;
+    --boys: #1565c0;
+    --boys-bg: #e3f2fd;
+    --alert: #b71c1c;
+    --alert-bg: #ffebee;
+    --ok: #2e7d32;
+    --ok-bg: #e8f5e9;
+    --ink: #1a1a1a;
+    --muted: #5c6470;
+    --line: #e2e5ea;
+    --bg: #f7f8fa;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    margin: 0;
+    padding: 32px 20px 64px;
+    line-height: 1.5;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; }
+  header {
+    border-bottom: 3px solid var(--ink);
+    padding-bottom: 16px;
+    margin-bottom: 28px;
+  }
+  h1 {
+    font-size: 28px;
+    margin: 0 0 4px;
+    letter-spacing: -0.5px;
+  }
+  .subtitle { color: var(--muted); font-size: 15px; margin: 0; }
+  h2 {
+    font-size: 20px;
+    margin: 36px 0 14px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--line);
+  }
+  h3 { font-size: 15px; margin: 0 0 6px; }
+  .legend {
+    display: flex; gap: 12px; flex-wrap: wrap;
+    margin: 16px 0 0; font-size: 13px;
+  }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 999px; font-weight: 600;
+  }
+  .chip.girls { background: var(--girls-bg); color: var(--girls); }
+  .chip.boys { background: var(--boys-bg); color: var(--boys); }
+  .chip.travel { background: #fff3e0; color: #e65100; }
+
+  .alert {
+    background: var(--alert-bg);
+    border-left: 4px solid var(--alert);
+    padding: 14px 16px;
+    border-radius: 6px;
+    margin: 20px 0;
+  }
+  .alert h3 { color: var(--alert); margin-bottom: 4px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .alert p { margin: 0; font-size: 14px; }
+
+  .timeline {
+    position: relative;
+    margin: 16px 0 0;
+    padding-left: 28px;
+    border-left: 2px solid var(--line);
+  }
+  .event {
+    position: relative;
+    margin-bottom: 18px;
+    background: white;
+    border-radius: 8px;
+    padding: 12px 16px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    border: 1px solid var(--line);
+  }
+  .event::before {
+    content: "";
+    position: absolute;
+    left: -35px;
+    top: 18px;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: white;
+    border: 3px solid var(--ink);
+  }
+  .event.girls { border-left: 4px solid var(--girls); }
+  .event.girls::before { border-color: var(--girls); }
+  .event.boys { border-left: 4px solid var(--boys); }
+  .event.boys::before { border-color: var(--boys); }
+  .event.travel { background: #fffaf2; border-style: dashed; }
+  .event.travel::before { border-color: #e65100; }
+  .event.prep { background: #f1f3f5; }
+  .event.prep::before { border-color: var(--muted); }
+
+  .event-time {
+    font-weight: 700; font-size: 14px; color: var(--ink);
+    display: inline-block; margin-right: 8px;
+  }
+  .event-tag {
+    display: inline-block;
+    font-size: 11px; font-weight: 700;
+    padding: 2px 8px; border-radius: 4px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    vertical-align: middle;
+  }
+  .event-tag.girls { background: var(--girls-bg); color: var(--girls); }
+  .event-tag.boys { background: var(--boys-bg); color: var(--boys); }
+  .event-tag.travel { background: #fff3e0; color: #e65100; }
+  .event-tag.prep { background: #e9ecef; color: var(--muted); }
+  .event-title { font-weight: 600; margin-top: 4px; font-size: 15px; }
+  .event-detail { color: var(--muted); font-size: 13px; margin-top: 2px; }
+
+  .venues {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 16px;
+  }
+  .venue {
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .venue h3 { margin-bottom: 6px; font-size: 15px; }
+  .venue .addr { font-size: 13px; color: var(--muted); margin: 0 0 8px; }
+  .venue ul { margin: 0; padding-left: 18px; font-size: 13px; }
+  .venue a { color: var(--boys); text-decoration: none; font-size: 13px; }
+
+  .checklist {
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-top: 12px;
+  }
+  .checklist ul { margin: 0; padding-left: 18px; }
+  .checklist li { margin-bottom: 4px; font-size: 14px; }
+
+  .note {
+    font-size: 12px;
+    color: var(--muted);
+    font-style: italic;
+    margin-top: 10px;
+  }
+
+  @media (max-width: 600px) {
+    .venues { grid-template-columns: 1fr; }
+    h1 { font-size: 22px; }
+  }
+  @media print {
+    body { background: white; padding: 0; }
+    .event, .venue, .checklist { box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>LMFC Memorial Day Weekend Tournament Plan</h1>
+  <p class="subtitle">Saturday, May 23 – Sunday, May 24, 2026 &middot; Sofia &amp; Max, two venues, solo</p>
+  <div class="legend">
+    <span class="chip girls">● Sofia — Premier 2014 Girls</span>
+    <span class="chip boys">● Max — Premier 2012 Boys</span>
+    <span class="chip travel">→ Travel / prep</span>
+  </div>
+</header>
+
+<div class="alert">
+  <h3>⚠ Saturday morning — Max needs a Malvern handoff</h3>
+  <p>
+    Max's Game 1 (8:00 AM, Malvern) and Sofia's Game 1 (9:15 AM, Downingtown) overlap and are ~20 min apart, so you can't be at both.
+    The plan: drop Max with his team at GCVSA around 7:30 AM (or arrange a ride with a teammate's family), drive straight to Downingtown,
+    and be at Sofia's 9:15 AM game in time for warm-up. You'll miss Max's Game 1 — confirm with Simon or another 2012 Boys family
+    that someone has eyes on Max between his Game 1 and Game 2. You'll be back in Malvern around 11:05 AM, well before his 1:00 PM game.
+  </p>
+</div>
+
+<h2>Saturday, May 23</h2>
+<div class="timeline">
+
+  <div class="event prep">
+    <div><span class="event-time">7:00 AM</span><span class="event-tag prep">Depart with both kids</span></div>
+    <div class="event-title">Leave for Malvern with Sofia + Max</div>
+    <div class="event-detail">Pack everything for both kids — you won't be back at a home base for hours. Cleats, shin guards, both jerseys, water, snacks, Sofia's gear too.</div>
+  </div>
+
+  <div class="event prep">
+    <div><span class="event-time">~7:30 AM</span><span class="event-tag prep">Drop-off</span></div>
+    <div class="event-title">Drop Max at GCVSA (Malvern)</div>
+    <div class="event-detail">Hand Max off to Simon / a 2012 Boys teammate's family. Confirm in advance that someone will watch him after his game until you're back. Then immediately head to Downingtown.</div>
+  </div>
+
+  <div class="event boys">
+    <div><span class="event-time">8:00 AM</span><span class="event-tag boys">Max — Game 1</span></div>
+    <div class="event-title">vs BWP Albany BWP Football Academy (U14s / 2012s)</div>
+    <div class="event-detail">GCVSA Line Road Complex — <strong>Field 3</strong> &middot; 137 Line Road, Malvern, PA &middot; You will not be there — check in with Simon for the result.</div>
+  </div>
+
+  <div class="event girls">
+    <div><span class="event-time">9:15 AM</span><span class="event-tag girls">Sofia — Game 1</span></div>
+    <div class="event-title">vs FC DELCO Black Conshy '14 (G) — 9v9</div>
+    <div class="event-detail">United Sports — <strong>Field 01B</strong> &middot; 1426 Marshallton Thorndale Rd, Downingtown, PA &middot; Arrive ~8:30 AM for warm-up.</div>
+  </div>
+
+  <div class="event travel">
+    <div><span class="event-time">~10:45 AM</span><span class="event-tag travel">Travel + pickup</span></div>
+    <div class="event-title">Downingtown → Malvern (~20 min) to rejoin Max</div>
+    <div class="event-detail">Sofia's game ends ~10:45. Drive straight back to GCVSA, arrive ~11:05 AM. Grab lunch with both kids near the Malvern complex before Max's 1:00 PM game.</div>
+  </div>
+
+  <div class="event boys">
+    <div><span class="event-time">1:00 PM</span><span class="event-tag boys">Max — Game 2</span></div>
+    <div class="event-title">vs STA Mount Olive Soccer Club (STA MOSC 2012 EDP Boys)</div>
+    <div class="event-detail">GCVSA Line Road Complex — <strong>Field 4</strong> &middot; 137 Line Road, Malvern, PA</div>
+  </div>
+
+  <div class="event travel">
+    <div><span class="event-time">~2:30 PM</span><span class="event-tag travel">Travel</span></div>
+    <div class="event-title">Malvern → Downingtown (~20 min)</div>
+    <div class="event-detail">Tight but workable. Aim to leave the field by 2:35 to arrive United Sports by ~2:55 PM.</div>
+  </div>
+
+  <div class="event girls">
+    <div><span class="event-time">3:30 PM</span><span class="event-tag girls">Sofia — Game 2</span></div>
+    <div class="event-title">vs South Parkland Youth Phoenix 2014</div>
+    <div class="event-detail">United Sports — <strong>Field 02B</strong> &middot; 1426 Marshallton Thorndale Rd, Downingtown, PA</div>
+  </div>
+
+  <div class="event prep">
+    <div><span class="event-time">~5:00 PM</span><span class="event-tag prep">Day done</span></div>
+    <div class="event-title">Dinner / recover</div>
+    <div class="event-detail">Early-ish dinner recommended — Max's Sunday warm-up is at 8:30 AM.</div>
+  </div>
+
+</div>
+
+<h2>Sunday, May 24</h2>
+<div class="timeline">
+
+  <div class="event prep">
+    <div><span class="event-time">8:15 AM</span><span class="event-tag prep">Depart</span></div>
+    <div class="event-title">Leave for Malvern</div>
+    <div class="event-detail">Target arrival 8:30 AM at GCVSA for warm-up.</div>
+  </div>
+
+  <div class="event boys">
+    <div><span class="event-time">9:15 AM</span><span class="event-tag boys">Max — Game 3</span></div>
+    <div class="event-title">vs LVU Rush ECNL-RL B12</div>
+    <div class="event-detail">GCVSA Line Road Complex — <strong>Field 4</strong> &middot; 137 Line Road, Malvern, PA</div>
+  </div>
+
+  <div class="event travel">
+    <div><span class="event-time">~10:45 AM</span><span class="event-tag travel">Travel</span></div>
+    <div class="event-title">Malvern → Downingtown (~20 min)</div>
+    <div class="event-detail">Comfortable window — arrive United Sports by ~11:05 AM with time to settle in.</div>
+  </div>
+
+  <div class="event girls">
+    <div><span class="event-time">11:45 AM</span><span class="event-tag girls">Sofia — Game 3</span></div>
+    <div class="event-title">vs Manhattan SC Arsenal White 2014</div>
+    <div class="event-detail">United Sports — <strong>Dome Field 02A</strong> (indoor) &middot; 1426 Marshallton Thorndale Rd, Downingtown, PA</div>
+  </div>
+
+  <div class="event prep">
+    <div><span class="event-time">~1:15 PM</span><span class="event-tag prep">Wrap</span></div>
+    <div class="event-title">Tournament complete — head home</div>
+  </div>
+
+</div>
+
+<h2>Venues</h2>
+<div class="venues">
+  <div class="venue" style="border-top: 3px solid var(--girls);">
+    <h3>United Sports Training Center <span style="color: var(--girls); font-size: 12px;">(Sofia)</span></h3>
+    <p class="addr">1426 Marshallton Thorndale Rd, Downingtown, PA 19335</p>
+    <ul>
+      <li>Field 01B — Sat 9:15 AM</li>
+      <li>Field 02B — Sat 3:30 PM</li>
+      <li>Dome Field 02A — Sun 11:45 AM (indoor)</li>
+    </ul>
+  </div>
+  <div class="venue" style="border-top: 3px solid var(--boys);">
+    <h3>GCVSA Line Road Complex <span style="color: var(--boys); font-size: 12px;">(Max)</span></h3>
+    <p class="addr">137 Line Road, Malvern, PA 19355</p>
+    <ul>
+      <li>Field 3 — Sat 8:00 AM</li>
+      <li>Field 4 — Sat 1:00 PM</li>
+      <li>Field 4 — Sun 9:15 AM</li>
+    </ul>
+  </div>
+</div>
+
+<h2>Travel between venues</h2>
+<div class="checklist">
+  <p style="margin: 0 0 8px;"><strong>United Sports (Downingtown) ↔ GCVSA Line Road (Malvern):</strong> approximately <strong>20 minutes</strong> by car (~8–10 miles via PA-3 / Strasburg Rd).</p>
+  <p style="margin: 0;">Memorial Day weekend should mean light commuter traffic, but tournament-day congestion at the venues themselves can add 5–10 min for parking. Pad accordingly.</p>
+  <p class="note">Drive time is an estimate — check Google Maps morning-of for live conditions.</p>
+</div>
+
+<h2>Packing &amp; prep checklist</h2>
+<div class="checklist">
+  <ul>
+    <li>Both kids' uniforms (home + away jerseys, shorts, socks)</li>
+    <li>Cleats + indoor/turf shoes (Dome Field 02A on Sunday may want turf-appropriate footwear)</li>
+    <li>Shin guards, mouthguards, headbands</li>
+    <li>Multiple water bottles per kid + electrolyte mix</li>
+    <li>Snacks: fruit, bagels, granola bars, pretzels</li>
+    <li>Sunscreen + hats (Saturday outdoor games)</li>
+    <li>Folding chairs, blanket, small cooler</li>
+    <li>Rain gear / extra layers (May weather in PA is unpredictable)</li>
+    <li>First aid: KT tape, band-aids, ibuprofen, ice packs</li>
+    <li>Phone chargers / portable battery</li>
+    <li>Cash for parking / concessions</li>
+    <li>Schedule printout + this plan</li>
+  </ul>
+</div>
+
+<h2>Open items for Ben (Sofia's coach) &amp; Simon</h2>
+<div class="checklist">
+  <ul>
+    <li>Ben will send meeting times + arrival details for Sofia's team — watch for that email this week.</li>
+    <li>Simon will send the same for Max's team — meeting time may be earlier than 7:15 AM if formal team arrival is required.</li>
+    <li>Confirm warm-up time conventions with both coaches — this plan assumes ~45 min pre-game arrival.</li>
+  </ul>
+</div>
+
+<p class="note">Plan generated May 18, 2026. Adjust departure times once both coaches send formal arrival/meeting instructions.</p>
+
+</div>
+</body>
+</html>
