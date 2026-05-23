@@ -11,6 +11,7 @@
 // ─────────────────────────────────────────────────────────────
 const Icon = {
   cal:  (c='currentColor') => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>,
+  fork: (c='currentColor') => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M6 3v7a2 2 0 0 0 2 2v9M10 3v7a2 2 0 0 1-2 2M17 3c-1 2-2 4-2 7s1 4 2 4v7"/></svg>,
   pin:  (c='currentColor') => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s7-7.5 7-13a7 7 0 1 0-14 0c0 5.5 7 13 7 13z"/><circle cx="12" cy="9" r="2.5"/></svg>,
   bag:  (c='currentColor') => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 8h16l-1 12H5L4 8z"/><path d="M8 8V6a4 4 0 0 1 8 0v2"/></svg>,
   note: (c='currentColor') => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M6 3h9l4 4v14H6z"/><path d="M9 12h7M9 16h5M9 8h4"/></svg>,
@@ -33,8 +34,9 @@ const Icon = {
 function Header({ dayId, setDayId, day, simulatedNow, onTitleTap }) {
   const T = TOKENS;
   const games = day.events.filter(e => e.kind === 'game');
-  const attended = games.filter(e => e.attending !== false).length;
-  const venues = new Set(games.map(g => g.venue)).size;
+  const dinners = day.events.filter(e => e.kind === 'dinner');
+  const attended = [...games, ...dinners].filter(e => e.attending !== false).length;
+  const venues = new Set([...games, ...dinners].map(g => g.venue)).size;
 
   return (
     <div style={{
@@ -77,9 +79,8 @@ function Header({ dayId, setDayId, day, simulatedNow, onTitleTap }) {
               background: d.id === dayId ? T.ink : 'transparent',
               color: d.id === dayId ? T.bg : T.ink2,
               fontFamily: T.font, fontWeight: 600, fontSize: 13,
-              letterSpacing: 0.1,
-            }}>{d.label} {d.date.split(' ')[1]}</button>
-          ))}
+              letterSpacing: 0.1, whiteSpace:'nowrap',
+            }}>{d.label} {d.date.split(' ')[1]}</button>          ))}
         </div>
       </div>
 
@@ -111,11 +112,11 @@ function Header({ dayId, setDayId, day, simulatedNow, onTitleTap }) {
 function UpNext({ day, simulatedNow, onOpen }) {
   const T = TOKENS;
   if (simulatedNow.day !== day.id) return null;
-  // find the next event the parent is actually attending (skip Max G1 unattended)
-  const games = day.events
-    .filter(e => e.kind === 'game' && e.attending !== false && e.start >= simulatedNow.minute - 5);
-  if (games.length === 0) return null;
-  const next = games[0];
+  // find the next attended event (game OR dinner) starting after now-ish
+  const upcoming = day.events
+    .filter(e => (e.kind === 'game' || e.kind === 'dinner') && e.attending !== false && e.start >= simulatedNow.minute - 5);
+  if (upcoming.length === 0) return null;
+  const next = upcoming[0];
   const col = kidColor(next.lane);
   const mins = next.start - simulatedNow.minute;
 
@@ -167,11 +168,11 @@ function UpNext({ day, simulatedNow, onOpen }) {
               <div style={{
                 fontSize: 18, fontWeight: 600, color: col.deep,
                 letterSpacing: -0.3, lineHeight: 1.15, marginBottom: 4,
-              }}>{next.who} · {next.game}</div>
+              }}>{next.who} · {next.kind === 'dinner' ? (next.label || 'Team dinner') : next.game}</div>
               <div style={{
                 fontSize: 13.5, color: T.ink2, lineHeight: 1.35,
                 marginBottom: 8,
-              }}>vs {next.opponent}</div>
+              }}>{next.kind === 'dinner' ? next.opponent : 'vs ' + next.opponent}</div>
               <div style={{
                 display:'inline-flex', alignItems:'center', gap: 6,
                 padding:'4px 9px', background: col.tint,
@@ -207,16 +208,24 @@ function UpNext({ day, simulatedNow, onOpen }) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// Hero action / conflict callout (Saturday morning handoff)
+// Hero actions (1+) — conflict / pre-game plays
 // ─────────────────────────────────────────────────────────────
-function HeroAction({ day }) {
+function HeroActions({ day }) {
+  // back-compat with old singular heroAction
+  const actions = day.heroActions || (day.heroAction ? [day.heroAction] : []);
+  if (!actions.length) return null;
+  return (
+    <div style={{ padding: '4px 18px 0', display:'flex', flexDirection:'column', gap: 10 }}>
+      {actions.map((a, i) => <HeroActionCard key={a.id || i} action={a} />)}
+    </div>
+  );
+}
+
+function HeroActionCard({ action }) {
   const T = TOKENS;
   const [open, setOpen] = React.useState(true);
-  if (!day.heroAction) return null;
-  const a = day.heroAction;
-
+  const a = action;
   return (
-    <div style={{ padding: '4px 18px 0' }}>
       <div style={{
         background: T.warnTint, border: `1px solid ${T.warnBg}`,
         borderRadius: T.rLg, overflow:'hidden',
@@ -260,7 +269,6 @@ function HeroAction({ day }) {
           </div>
         )}
       </div>
-    </div>
   );
 }
 
@@ -373,7 +381,7 @@ function Timeline({ day, expanded, setExpanded, simulatedNow, pxPerMin = PX_PER_
 
         {/* Events */}
         {day.events.map(ev => {
-          if (ev.kind === 'game') return (
+          if (ev.kind === 'game' || ev.kind === 'dinner') return (
             <GameCard key={ev.id} ev={ev} y={yFor(ev.start)}
               h={(ev.end - ev.start) * pxPerMin}
               expanded={expanded === ev.id}
@@ -423,9 +431,15 @@ function Timeline({ day, expanded, setExpanded, simulatedNow, pxPerMin = PX_PER_
 // ─────────────────────────────────────────────────────────────
 function GameCard({ ev, y, h, expanded, onToggle }) {
   const T = TOKENS, col = kidColor(ev.lane);
+  const isDinner = ev.kind === 'dinner';
   // game cards live in their lane column. height is clamped to a sane min/max.
   const cardH = Math.max(72, Math.min(h - 6, 130));
   const leftSide = ev.lane === 'sofia';
+  // Field/code badge: real field for games, city for dinners (with fork icon)
+  const shortOpponent = (ev.opponent || '')
+    .replace(' Football Academy','').replace(' EDP Boys','')
+    .replace(' White 2014','').replace(' Youth Phoenix','')
+    .replace('Syracuse Development Academy ', 'SDA ');
   return (
     <div style={{
       position:'absolute', top: y,
@@ -451,21 +465,25 @@ function GameCard({ ev, y, h, expanded, onToggle }) {
             color: T.ink, letterSpacing: -0.2,
           }}>{fmtTimeShort(ev.start)}</span>
           <span style={{
+            display:'inline-flex', alignItems:'center', gap: 3,
             fontFamily: T.fontMono, fontSize: 9.5, fontWeight: 700,
             color: col.deep, letterSpacing: 0.6, padding:'1px 5px',
             background: col.bg, borderRadius: 3,
             textTransform:'uppercase', whiteSpace:'nowrap',
-          }}>{ev.field.replace('Field ','F').replace('Dome ','D')}</span>
+          }}>
+            {isDinner && <span style={{ display:'inline-flex', marginRight: 1 }}>{Icon.fork(col.deep)}</span>}
+            {isDinner ? ev.field : ev.field.replace('Field ','F').replace('Dome ','D')}
+          </span>
         </div>
         <div style={{
           fontSize: 11.5, fontWeight: 600, color: col.deep,
           letterSpacing: 0.2, lineHeight: 1.15,
-        }}>{ev.game}</div>
+        }}>{isDinner ? (ev.label || 'Team dinner') : ev.game}</div>
         <div style={{
           fontSize: 11.5, color: T.ink2, lineHeight: 1.25, marginTop: 2,
           display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient:'vertical',
           overflow:'hidden',
-        }}>vs {ev.opponent.replace(' Football Academy','').replace(' EDP Boys','').replace(' White 2014','').replace(' Youth Phoenix','')}</div>
+        }}>{isDinner ? ev.venue : 'vs ' + shortOpponent}</div>
 
         {ev.attending === false && (
           <div style={{
@@ -488,6 +506,7 @@ function GameCard({ ev, y, h, expanded, onToggle }) {
 
 function GameDetails({ ev, col }) {
   const T = TOKENS;
+  const isDinner = ev.kind === 'dinner';
   return (
     <div style={{
       marginTop: 6, background: T.surface,
@@ -504,10 +523,10 @@ function GameDetails({ ev, col }) {
       <div style={{
         fontSize: 13, fontWeight: 600, color: T.ink,
         lineHeight: 1.3, marginBottom: 8,
-      }}>vs {ev.opponent}</div>
+      }}>{isDinner ? ev.venue : 'vs ' + ev.opponent}</div>
       <div style={{
         fontSize: 11.5, color: T.muted, lineHeight: 1.4, marginBottom: 10,
-      }}>{ev.venue} · {ev.field}<br/>{ev.addr}</div>
+      }}>{isDinner ? ev.opponent + ' · ' + ev.field : ev.venue + ' · ' + ev.field}<br/>{ev.addr}</div>
       {ev.note && (
         <div style={{
           fontSize: 11.5, fontStyle:'italic', color: T.ink2,
@@ -607,7 +626,7 @@ function VenuesPanel() {
                   fontFamily: T.fontMono, fontSize: 10.5, fontWeight: 700,
                   color: col.deep, letterSpacing: 1.2, textTransform:'uppercase',
                   flex: 1,
-                }}>{v.for === 'sofia' ? 'Sofia' : 'Max'}</span>
+                }}>{v.for === 'sofia' ? 'Sofia' : v.for === 'max' ? 'Max' : (v.tag || 'Home base')}</span>
               </div>
               <div style={{ padding: '14px 16px 16px' }}>
                 <div style={{
@@ -653,9 +672,24 @@ function VenuesPanel() {
       }}>
         <div style={{
           fontFamily: T.fontMono, fontSize: 10, fontWeight: 700,
-          color: T.muted, letterSpacing: 1.2, textTransform:'uppercase', marginBottom: 5,
-        }}>Drive between venues</div>
-        {TOURNAMENT.driveNote}
+          color: T.muted, letterSpacing: 1.2, textTransform:'uppercase', marginBottom: 8,
+        }}>Driving times</div>
+        {(TOURNAMENT.driveRoutes || []).map((r, i) => (
+          <div key={i} style={{
+            display:'flex', gap: 8, alignItems:'baseline',
+            padding: '5px 0',
+            borderTop: i === 0 ? 'none' : `1px solid ${T.hairline}`,
+          }}>
+            <span style={{
+              fontFamily: T.fontMono, fontSize: 11, fontWeight: 700,
+              color: T.ink, letterSpacing: 0.2, whiteSpace:'nowrap',
+            }}>{r.mins} min</span>
+            <span style={{ fontSize: 11.5, color: T.ink2, lineHeight: 1.35 }}>{r.from} → {r.to}</span>
+          </div>
+        ))}
+        <div style={{
+          marginTop: 8, fontSize: 11, color: T.muted, fontStyle:'italic', lineHeight: 1.45,
+        }}>{TOURNAMENT.driveNote}</div>
       </div>
     </div>
   );
@@ -719,28 +753,64 @@ function PackPanel() {
 // ─────────────────────────────────────────────────────────────
 function NotesPanel() {
   const T = TOKENS;
+  const items = TOURNAMENT.openItems || [];
+  const asks = items.filter(o => o.kind === 'ask' || !o.kind);
+  const fyis = items.filter(o => o.kind === 'fyi');
   return (
     <div style={{ padding: '14px 18px 24px' }}>
-      <SectionTitle>Open items</SectionTitle>
+      <SectionTitle>
+        <span style={{ color: T.warn, marginRight: 6 }}>●</span>
+        Asks — things you need to settle
+      </SectionTitle>
       <div style={{
         background: T.surface, borderRadius: T.rLg,
         border: `1px solid ${T.hairline}`, boxShadow: T.shadow,
         overflow:'hidden',
       }}>
-        {TOURNAMENT.openItems.map((o, i) => (
+        {asks.map((o, i) => (
           <div key={i} style={{
             padding: '14px 16px',
             borderTop: i === 0 ? 'none' : `1px solid ${T.hairline}`,
+            position:'relative',
           }}>
             <div style={{
-              fontFamily: T.fontMono, fontSize: 10.5, fontWeight: 700,
-              color: T.muted, letterSpacing: 1.0, textTransform:'uppercase',
-              marginBottom: 4,
+              position:'absolute', left: 0, top: 14, bottom: 14, width: 3,
+              background: T.warn, borderRadius: '0 2px 2px 0',
+            }} />
+            <div style={{
+              fontSize: 13, fontWeight: 700, color: T.ink,
+              letterSpacing: -0.1, marginBottom: 4,
             }}>{o.who}</div>
-            <div style={{ fontSize: 13, color: T.ink2, lineHeight: 1.45 }}>{o.what}</div>
+            <div style={{ fontSize: 12.5, color: T.ink2, lineHeight: 1.45 }}>{o.what}</div>
           </div>
         ))}
       </div>
+
+      {fyis.length > 0 && (<>
+        <SectionTitle style={{ marginTop: 22 }}>
+          <span style={{ color: T.muted, marginRight: 6 }}>○</span>
+          For your information
+        </SectionTitle>
+        <div style={{
+          background: T.surface, borderRadius: T.rLg,
+          border: `1px solid ${T.hairline}`, boxShadow: T.shadow,
+          overflow:'hidden',
+        }}>
+          {fyis.map((o, i) => (
+            <div key={i} style={{
+              padding: '14px 16px',
+              borderTop: i === 0 ? 'none' : `1px solid ${T.hairline}`,
+            }}>
+              <div style={{
+                fontFamily: T.fontMono, fontSize: 10.5, fontWeight: 700,
+                color: T.muted, letterSpacing: 1.0, textTransform:'uppercase',
+                marginBottom: 4,
+              }}>{o.who}</div>
+              <div style={{ fontSize: 12.5, color: T.ink2, lineHeight: 1.45 }}>{o.what}</div>
+            </div>
+          ))}
+        </div>
+      </>)}
 
       <SectionTitle style={{ marginTop: 22 }}>The plan</SectionTitle>
       <div style={{
@@ -748,7 +818,7 @@ function NotesPanel() {
         border: `1px solid ${T.hairline}`, boxShadow: T.shadow,
         padding: '14px 16px', fontSize: 12.5, color: T.muted, lineHeight: 1.55,
       }}>
-        Plan generated May 18, 2026. Adjust departure times once both coaches send formal arrival / meeting instructions. Tap any event on the schedule to pull up directions and notes.
+        Plan updated May 22, 2026 with the revised game schedule. Adjust departure times once both coaches send formal arrival / meeting instructions. Tap any event on the schedule to pull up directions and notes.
       </div>
     </div>
   );
@@ -833,7 +903,7 @@ function MobileApp({ initialTab = 'schedule', initialDay, simulatedNow }) {
           <>
             <UpNext day={day} simulatedNow={sNow}
               onOpen={(id) => setExpanded(id)} />
-            <HeroAction day={day} />
+            <HeroActions day={day} />
             <Timeline day={day} expanded={expanded} setExpanded={setExpanded} simulatedNow={sNow} />
           </>
         )}
@@ -870,7 +940,7 @@ function TopBar({ title }) {
 }
 
 Object.assign(window, {
-  MobileApp, Timeline, UpNext, HeroAction, Header, BottomTabs,
+  MobileApp, Timeline, UpNext, HeroActions, HeroActionCard, Header, BottomTabs,
   VenuesPanel, PackPanel, NotesPanel, SectionTitle,
   GameCard, TravelChip, LaneHeader, Icon,
 });

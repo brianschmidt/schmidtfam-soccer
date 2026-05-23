@@ -28,7 +28,7 @@ function DesktopApp({ simulatedNow }) {
         {/* Left rail */}
         <div style={{ display:'flex', flexDirection:'column', gap: 16, position:'sticky', top: 24 }}>
           <DesktopUpNext sNow={sNow} setExpanded={setExpanded} />
-          <DesktopHero day={sat} />
+          <DesktopHeroes day={sat} />
           <DesktopSidePicker active={active} setActive={setActive} />
           {active === 'venues' && <DesktopVenues />}
           {active === 'pack'   && <DesktopPack />}
@@ -102,9 +102,9 @@ function DesktopHeader({ sNow }) {
 function DesktopUpNext({ sNow, setExpanded }) {
   const T = TOKENS;
   const day = TOURNAMENT.days.find(d => d.id === sNow.day);
-  const games = day.events.filter(e => e.kind === 'game' && e.attending !== false && e.start >= sNow.minute - 5);
-  if (!games.length) return null;
-  const next = games[0];
+  const upcoming = day.events.filter(e => (e.kind === 'game' || e.kind === 'dinner') && e.attending !== false && e.start >= sNow.minute - 5);
+  if (!upcoming.length) return null;
+  const next = upcoming[0];
   const col = kidColor(next.lane);
   const mins = next.start - sNow.minute;
 
@@ -175,10 +175,18 @@ function DesktopUpNext({ sNow, setExpanded }) {
   );
 }
 
-function DesktopHero({ day }) {
+function DesktopHeroes({ day }) {
+  const actions = day.heroActions || (day.heroAction ? [day.heroAction] : []);
+  if (!actions.length) return null;
+  return (
+    <div style={{ display:'flex', flexDirection:'column', gap: 10 }}>
+      {actions.map((a, i) => <DesktopHeroCard key={a.id || i} a={a} />)}
+    </div>
+  );
+}
+
+function DesktopHeroCard({ a }) {
   const T = TOKENS;
-  if (!day.heroAction) return null;
-  const a = day.heroAction;
   return (
     <div style={{
       background: T.warnTint, border: `1px solid ${T.warnBg}`,
@@ -251,6 +259,7 @@ function DesktopVenues() {
     }}>
       {TOURNAMENT.venues.map((v, i) => {
         const col = kidColor(v.for);
+        const tag = v.for === 'sofia' ? 'Sofia' : v.for === 'max' ? 'Max' : (v.tag || 'Home base');
         return (
           <div key={v.id} style={{
             padding: '14px 16px',
@@ -263,7 +272,7 @@ function DesktopVenues() {
               <span style={{
                 fontFamily: T.fontMono, fontSize: 9.5, fontWeight: 700,
                 color: col.deep, letterSpacing: 1.2, textTransform:'uppercase',
-              }}>{v.for === 'sofia' ? 'Sofia' : 'Max'}</span>
+              }}>{tag}</span>
             </div>
             <div style={{
               fontSize: 14.5, fontWeight: 600, color: T.ink, letterSpacing: -0.2,
@@ -294,9 +303,23 @@ function DesktopVenues() {
       <div style={{
         padding: '12px 16px', background: T.surface2,
         borderTop: `1px solid ${T.hairline}`,
-        fontSize: 11.5, color: T.muted, lineHeight: 1.5,
       }}>
-        <b style={{ color: T.ink2 }}>~20 min</b> · 8–10 mi via PA-3 / Strasburg Rd. Pad 5–10 min for venue parking.
+        <div style={{
+          fontFamily: T.fontMono, fontSize: 9.5, fontWeight: 700,
+          color: T.muted, letterSpacing: 1.2, textTransform:'uppercase', marginBottom: 6,
+        }}>Drive times</div>
+        {(TOURNAMENT.driveRoutes || []).map((r, i) => (
+          <div key={i} style={{
+            display:'flex', gap: 8, alignItems:'baseline',
+            fontSize: 11.5, color: T.ink2, padding:'3px 0',
+          }}>
+            <span style={{
+              fontFamily: T.fontMono, fontWeight: 700, color: T.ink,
+              minWidth: 46,
+            }}>{r.mins} min</span>
+            <span style={{ flex: 1 }}>{r.from} → {r.to}</span>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -337,25 +360,64 @@ function DesktopPack() {
 
 function DesktopNotes() {
   const T = TOKENS;
+  const items = TOURNAMENT.openItems || [];
+  const asks = items.filter(o => o.kind === 'ask' || !o.kind);
+  const fyis = items.filter(o => o.kind === 'fyi');
   return (
-    <div style={{
-      background: T.surface, borderRadius: T.rLg,
-      border: `1px solid ${T.hairline}`, boxShadow: T.shadow,
-      overflow:'hidden',
-    }}>
-      {TOURNAMENT.openItems.map((o, i) => (
-        <div key={i} style={{
-          padding: '12px 16px',
-          borderTop: i === 0 ? 'none' : `1px solid ${T.hairline}`,
+    <div style={{ display:'flex', flexDirection:'column', gap: 10 }}>
+      <div style={{
+        background: T.surface, borderRadius: T.rLg,
+        border: `1px solid ${T.hairline}`, boxShadow: T.shadow,
+        overflow:'hidden',
+      }}>
+        <div style={{
+          fontFamily: T.fontMono, fontSize: 9.5, fontWeight: 700,
+          color: T.warn, letterSpacing: 1.4, textTransform:'uppercase',
+          padding: '10px 16px 4px',
+        }}>● Asks</div>
+        {asks.map((o, i) => (
+          <div key={i} style={{
+            padding: '10px 16px', position:'relative',
+            borderTop: `1px solid ${T.hairline}`,
+          }}>
+            <div style={{
+              position:'absolute', left: 0, top: 12, bottom: 12, width: 2.5,
+              background: T.warn,
+            }} />
+            <div style={{
+              fontSize: 12.5, fontWeight: 700, color: T.ink,
+              marginBottom: 3, letterSpacing: -0.1,
+            }}>{o.who}</div>
+            <div style={{ fontSize: 12, color: T.ink2, lineHeight: 1.4 }}>{o.what}</div>
+          </div>
+        ))}
+      </div>
+      {fyis.length > 0 && (
+        <div style={{
+          background: T.surface, borderRadius: T.rLg,
+          border: `1px solid ${T.hairline}`, boxShadow: T.shadow,
+          overflow:'hidden',
         }}>
           <div style={{
-            fontFamily: T.fontMono, fontSize: 10, fontWeight: 700,
-            color: T.muted, letterSpacing: 1.2, textTransform:'uppercase',
-            marginBottom: 4,
-          }}>{o.who}</div>
-          <div style={{ fontSize: 12.5, color: T.ink2, lineHeight: 1.4 }}>{o.what}</div>
+            fontFamily: T.fontMono, fontSize: 9.5, fontWeight: 700,
+            color: T.muted, letterSpacing: 1.4, textTransform:'uppercase',
+            padding: '10px 16px 4px',
+          }}>○ For your information</div>
+          {fyis.map((o, i) => (
+            <div key={i} style={{
+              padding: '10px 16px',
+              borderTop: `1px solid ${T.hairline}`,
+            }}>
+              <div style={{
+                fontFamily: T.fontMono, fontSize: 10, fontWeight: 700,
+                color: T.muted, letterSpacing: 1.0, textTransform:'uppercase',
+                marginBottom: 3,
+              }}>{o.who}</div>
+              <div style={{ fontSize: 12, color: T.ink2, lineHeight: 1.4 }}>{o.what}</div>
+            </div>
+          ))}
         </div>
-      ))}
+      )}
     </div>
   );
 }
@@ -366,7 +428,9 @@ function DesktopNotes() {
 function DayColumn({ day, expanded, setExpanded, simulatedNow }) {
   const T = TOKENS;
   const games = day.events.filter(e => e.kind === 'game');
-  const attended = games.filter(e => e.attending !== false).length;
+  const dinners = day.events.filter(e => e.kind === 'dinner');
+  const all = [...games, ...dinners];
+  const attended = all.filter(e => e.attending !== false).length;
   const isCurrentDay = simulatedNow.day === day.id;
 
   return (
@@ -396,6 +460,10 @@ function DayColumn({ day, expanded, setExpanded, simulatedNow }) {
           color: T.muted, letterSpacing: 0.6, textTransform:'uppercase',
         }}>
           <span><b style={{ color: T.ink, fontWeight: 700 }}>{games.length}</b> games</span>
+          {dinners.length > 0 && <>
+            <span style={{ color: T.hairlineStrong }}>·</span>
+            <span><b style={{ color: T.ink, fontWeight: 700 }}>{dinners.length}</b> dinner{dinners.length>1?'s':''}</span>
+          </>}
           <span style={{ color: T.hairlineStrong }}>·</span>
           <span><b style={{ color: T.ink, fontWeight: 700 }}>{attended}</b> attending</span>
           {day.conflicts.length > 0 && (

@@ -82,6 +82,7 @@ window.fmtCountdown = (mins) => {
 window.kidColor = (lane, T = window.TOKENS) => {
   if (lane === 'sofia') return { fg: T.sofia, bg: T.sofiaBg, tint: T.sofiaTint, deep: T.sofiaInk };
   if (lane === 'max')   return { fg: T.max,   bg: T.maxBg,   tint: T.maxTint,   deep: T.maxInk };
+  if (lane === 'hotel') return { fg: T.ink2,  bg: T.surface2, tint: T.surface2,  deep: T.ink };
   return { fg: T.ink,  bg: T.surface2, tint: T.surface2, deep: T.ink };
 };
 
