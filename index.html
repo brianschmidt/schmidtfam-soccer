@@ -83,6 +83,7 @@ const DATA = {
           opponent:"FC DELCO Black Conshy '14", age:'9v9 · G14s',
           venue:'United Sports', field:'Field 01B',
           addr:'1426 Marshallton Thorndale Rd, Downingtown, PA',
+          result:{ for:2, against:3 },
           note:'Arrive ~8:30 AM for warm-up. Whole family’s here — Max’s first game isn’t until 11:45.' },
         { id:'sat-travel1', kind:'travel', lane:'both', start: 10*60+45, end: 11*60,
           title:'Downingtown → West Chester',
@@ -288,6 +289,47 @@ const shortOpp = (op)=> (op||'')
   .replace(' White 2014','').replace(' Youth Phoenix','')
   .replace('Syracuse Development Academy ','SDA ');
 
+/* ───────────────────────── Results ───────────────────────── */
+// Aggregate each kid's record from games that have a recorded result.
+// result is stored as { for, against } — goals scored / conceded by their team.
+function teamRecords(){
+  const blank=()=>({w:0,l:0,d:0,gf:0,ga:0,played:0,last:null});
+  const rec={sofia:blank(),max:blank()};
+  DATA.days.forEach(d=>d.events.forEach(e=>{
+    if(e.kind!=='game'||!e.result||!rec[e.lane]) return;
+    const r=rec[e.lane], gf=e.result.for, ga=e.result.against;
+    r.played++; r.gf+=gf; r.ga+=ga;
+    if(gf>ga)r.w++; else if(gf<ga)r.l++; else r.d++;
+    r.last={for:gf,against:ga};
+  }));
+  return rec;
+}
+const outcomeOf = (res)=> res.for>res.against?'W':res.for<res.against?'L':'D';
+const outcomeStyle = (o)=> o==='W'?{fg:T.ok,bg:T.okBg}:o==='L'?{fg:T.warn,bg:T.warnBg}:{fg:T.muted,bg:T.surface2};
+function resultBadgeHTML(res, o){
+  o=o||{}; const oc=outcomeOf(res), c=outcomeStyle(oc);
+  const label = o.long?(oc==='W'?'Won':oc==='L'?'Lost':'Draw'):oc;
+  return `<span style="${st({display:'inline-flex',alignItems:'center',gap:5,fontFamily:T.fontMono,fontSize:o.size||10.5,fontWeight:700,color:c.fg,background:c.bg,borderRadius:5,padding:'2px 7px',letterSpacing:0.4})}"><span>${label}</span><span>${res.for}–${res.against}</span></span>`;
+}
+// The two team-record pills shown in the top navigation.
+function resultPillsHTML(o){
+  o=o||{}; const rec=teamRecords();
+  const names={sofia:'Sofia',max:'Max'};
+  return ['sofia','max'].map(lane=>{
+    const col=kidColor(lane), r=rec[lane];
+    const recStr = `${r.w}–${r.l}${r.d?'–'+r.d:''}`;
+    const last = r.last
+      ? resultBadgeHTML(r.last,{size:o.small||9.5})
+      : `<span style="${st({fontFamily:T.fontMono,fontSize:o.small||9.5,fontWeight:600,color:T.mutedSoft,letterSpacing:0.6})}">no games yet</span>`;
+    return `<div style="${st({display:'inline-flex',alignItems:'center',gap:7,padding:'5px 11px',background:col.bg,borderRadius:999})}">
+      <span style="${st({width:7,height:7,borderRadius:999,background:col.fg,flexShrink:0})}"></span>
+      <span style="${st({fontFamily:T.fontMono,fontSize:o.name||10.5,fontWeight:700,color:col.deep,letterSpacing:0.8,textTransform:'uppercase'})}">${names[lane]}</span>
+      <span style="${st({fontFamily:T.fontMono,fontSize:o.rec||12,fontWeight:700,color:col.deep,letterSpacing:0.4})}">${recStr}</span>
+      ${last}
+    </div>`;
+  }).join('');
+}
+
 /* ───────────────────────── State ───────────────────────── */
 let dayId = (localStorage.getItem('lmfc.day') === 'sun' || localStorage.getItem('lmfc.day') === 'sat')
   ? localStorage.getItem('lmfc.day') : getNow().day;
@@ -318,6 +360,7 @@ function gameBoxHTML(ev){
     </div>
     <div style="${st({fontSize:11.5,fontWeight:600,color:col.deep,letterSpacing:0.2,lineHeight:1.15})}">${isDinner?esc(ev.label||'Team dinner'):esc(ev.game)}</div>
     <div style="${st({fontSize:11.5,color:T.ink2,lineHeight:1.25,marginTop:2,display:'-webkit-box',WebkitLineClamp:2,WebkitBoxOrient:'vertical',overflow:'hidden'})}">${isDinner?esc(ev.venue):'vs '+esc(shortOpp(ev.opponent))}</div>
+    ${ev.result?`<div style="${st({marginTop:5})}">${resultBadgeHTML(ev.result,{size:10})}</div>`:''}
     ${ev.attending===false?`<div style="${st({marginTop:5,fontSize:9.5,fontWeight:700,color:T.muted,letterSpacing:0.6,textTransform:'uppercase',fontFamily:T.fontMono})}">· not attending ·</div>`:''}
     ${ev.indoor?`<div style="${st({position:'absolute',top:8,right:8,color:col.fg,opacity:0.5})}">${ICON.indoor(col.fg)}</div>`:''}
   </div>`;
@@ -327,6 +370,7 @@ function gameDetailsHTML(ev){
   return `<div class="ev-details" style="${st({marginTop:6,background:T.surface,border:`1px solid ${col.bg}`,borderRadius:10,padding:'12px',boxShadow:T.shadowLg,fontFamily:T.font,position:'relative'})}">
     <div style="${st({fontFamily:T.fontMono,fontSize:9.5,fontWeight:700,color:col.deep,letterSpacing:1.2,textTransform:'uppercase',marginBottom:4})}">${esc(ev.age)}</div>
     <div style="${st({fontSize:13,fontWeight:600,color:T.ink,lineHeight:1.3,marginBottom:8})}">${isDinner?esc(ev.venue):'vs '+esc(ev.opponent)}</div>
+    ${ev.result?`<div style="${st({marginBottom:10})}">${resultBadgeHTML(ev.result,{long:true,size:11.5})}</div>`:''}
     <div style="${st({fontSize:11.5,color:T.muted,lineHeight:1.4,marginBottom:10})}">${isDinner?esc(ev.opponent)+' · '+esc(ev.field):esc(ev.venue)+' · '+esc(ev.field)}<br>${esc(ev.addr)}</div>
     ${ev.note?`<div style="${st({fontSize:11.5,fontStyle:'italic',color:T.ink2,padding:'7px 9px',background:col.tint,borderRadius:6,lineHeight:1.4,marginBottom:10})}">${esc(ev.note)}</div>`:''}
     <a href="${mapsHref(ev.addr)}" target="_blank" rel="noopener" style="${st({display:'block',textAlign:'center',padding:'9px 10px',background:col.fg,color:'#fff',borderRadius:7,fontSize:12,fontWeight:600,textDecoration:'none',letterSpacing:0.2})}">Open in Maps →</a>
@@ -411,6 +455,10 @@ function headerHTML(day){
       <span style="${st({color:T.hairlineStrong})}">·</span>
       <span><b style="${st({color:T.ink,fontWeight:700})}">${venues}</b> venues</span>
       ${day.conflicts.length>0?`<span style="${st({color:T.hairlineStrong})}">·</span><span style="${st({color:T.warn,fontWeight:700})}">${day.conflicts.length} conflict</span>`:''}
+    </div>
+    <div style="${st({display:'flex',alignItems:'center',gap:8,marginTop:12,flexWrap:'wrap'})}">
+      <span style="${st({fontFamily:T.fontMono,fontSize:10,fontWeight:700,color:T.muted,letterSpacing:1.2,textTransform:'uppercase'})}">Results</span>
+      ${resultPillsHTML()}
     </div>
   </div>`;
 }
@@ -580,6 +628,7 @@ function desktopHeaderHTML(sNow){
       <div style="${st({fontFamily:T.fontMono,fontSize:11,color:T.muted,letterSpacing:0.4,marginTop:1})}">May 23 – 24, 2026 · Sofia &amp; Max · Solo</div>
     </div>
     <div style="${st({flex:1})}"></div>
+    <div style="${st({display:'flex',alignItems:'center',gap:8})}">${resultPillsHTML({name:10,rec:12,small:10})}</div>
     <div style="${st({display:'flex',alignItems:'center',gap:10,padding:'6px 12px',borderRadius:999,background:T.warnTint,border:`1px solid ${T.warnBg}`})}">
       <span style="${st({width:7,height:7,borderRadius:999,background:T.warn,boxShadow:`0 0 0 4px ${T.warnBg}`})}"></span>
       <span style="${st({fontFamily:T.fontMono,fontSize:11,fontWeight:700,color:T.warn,letterSpacing:0.6,textTransform:'uppercase'})}">Now · ${esc(day.dow)} ${fmtTime(sNow.minute)}</span>
@@ -722,7 +771,7 @@ function printHTML(){
         <div style="font-family:var(--mono);font-weight:700;width:78px;">${fmtTime(ev.start)}</div>
         <div style="flex:1;">
           <div style="font-weight:700;">${who}</div>
-          <div>${titleLine}</div>
+          <div>${titleLine}${ev.result?` — <b>${outcomeOf(ev.result)==='W'?'Won':outcomeOf(ev.result)==='L'?'Lost':'Draw'} ${ev.result.for}–${ev.result.against}</b>`:''}</div>
           <div style="color:#555;font-size:12px;">${esc(ev.venue)} · ${esc(ev.field)} · ${esc(ev.addr)}</div>
           ${ev.note?`<div style="color:#555;font-size:12px;font-style:italic;">${esc(ev.note)}</div>`:''}
         </div>
