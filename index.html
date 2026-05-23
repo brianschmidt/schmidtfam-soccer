@@ -249,10 +249,12 @@ const kidColor = (lane)=>{
 const mapsHref = (addr)=>`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(addr)}`;
 const esc = (s)=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
-// Hard-coded "now" for the pre-tournament demo. Switch to real time on the weekend:
-//   const d = new Date();
-//   return { day: d.getDay() === 0 ? 'sun' : 'sat', minute: d.getHours()*60 + d.getMinutes() };
-function getNow(){ return { day:'sat', minute: 8*60 + 35 }; }
+// "Now" comes from the device clock. The tournament is Sat/Sun only, so any
+// non-Sunday maps to Saturday (per the handoff spec).
+function getNow(){
+  const d = new Date();
+  return { day: d.getDay() === 0 ? 'sun' : 'sat', minute: d.getHours()*60 + d.getMinutes() };
+}
 
 // Style-object → inline-style string (React-like px handling)
 const UNITLESS = new Set(['opacity','zIndex','fontWeight','lineHeight','flex','flexGrow','flexShrink','order','zoom','WebkitLineClamp']);

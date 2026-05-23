@@ -1,0 +1,5 @@
+# OS cruft
+.DS_Store
+
+# Design handoff bundle — kept locally for reference, not part of the deployed site
+design_handoff_weekend_hq/
