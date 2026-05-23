@@ -98,25 +98,25 @@ const DATA = {
           note:'Arrive ~11:00 — team wants him there 45 min early.' },
         { id:'sat-break', kind:'travel', lane:'both', start: 13*60+15, end: 15*60,
           title:'Midday break — lunch + regroup',
-          detail:'A few hours until the afternoon split. Sofia’s 3:30 in Downingtown, Max’s 4:45 in West Chester. Time to lock in the ride for whichever kid you’re not with.' },
+          detail:'A few hours until a busy afternoon. You’re aiming for both games — Sofia’s 3:30 in Downingtown, then Max’s 4:45 in West Chester. Time to line up Sofia’s ride from her game to her 7:00 dinner.' },
         { id:'sat-sof2', kind:'game', lane:'sofia', start: 15*60+30, end: 17*60,
-          who:'Sofia', game:'Game 2', attending:false,
+          who:'Sofia', game:'Game 2', attending:true,
           opponent:'South Parkland Youth Phoenix 2014', age:'9v9 · G14s',
           venue:'United Sports', field:'Field 02B',
           addr:'1426 Marshallton Thorndale Rd, Downingtown, PA',
-          note:'Overlaps Max’s 4:45 — a teammate’s family needs to cover this one.' },
+          note:'Catch the start, then leave by ~4:20 to make Max’s 4:45 in West Chester (~15 min). Line up a ride to take Sofia from here to her 7:00 dinner.' },
         { id:'sat-max2', kind:'game', lane:'max', start: 16*60+45, end: 18*60+15,
           who:'Max', game:'Game 2', attending:true,
           opponent:'East Coast Surf B2012 EDP', age:'U14 · 2012s',
           venue:'Bayard Rustin HS', field:'Field 4',
           addr:'1100 Shiloh Road, West Chester, PA',
-          note:'Arrive 4:00 (45 min early).' },
+          note:'Coming straight from Sofia’s 3:30 game — leave Downingtown by ~4:20 to make kickoff (~15 min). You’ll likely miss the 4:00 warm-up.' },
         { id:'sat-sof-dinner', kind:'dinner', lane:'sofia', start: 19*60, end: 20*60+30,
           who:'Sofia', label:'Team dinner', attending:false,
           opponent:'2014 Girls team dinner', age:'G14s · Team dinner',
           venue:"LaScala's FIRE", field:'Villanova',
           addr:'789 E Lancaster Ave, Villanova, PA 19085',
-          note:'Sofia needs a ride from her 3:30 game through this dinner — ideally a teammate’s family covers the whole afternoon + evening.' },
+          note:'You leave Sofia’s 3:30 game early for Max’s 4:45, so a 2014 Girls family needs to carry Sofia from her game through this dinner.' },
         { id:'sat-max-dinner', kind:'dinner', lane:'max', start: 19*60+15, end: 20*60+45,
           who:'Max', label:'Team dinner', attending:true,
           opponent:'2012 Boys team dinner', age:'U14 · Team dinner',
@@ -125,19 +125,19 @@ const DATA = {
           note:'Comfortable gap after Max’s 4:45 game (~6:15 end) before the 7:15 dinner. Berwyn is ~20 min from West Chester.' },
       ],
       conflicts: [
-        { start: 15*60+30, end: 20*60+45, label:'One track only' }
+        { start: 19*60, end: 20*60+45, label:'Pick one dinner' }
       ],
       heroActions: [
         {
           id:'sat-track',
-          title:'Saturday afternoon — pick one kid’s track',
+          title:'Saturday afternoon — two games, then one dinner',
           tone:'warn',
-          body:'From 3:30 PM on, Sofia (Downingtown) and Max (West Chester) split. Current plan: you ride Max’s track — his 4:45 game, then his 7:15 dinner in Berwyn. A 2014 Girls teammate’s family covers Sofia’s 3:30 game and brings her to her 7:00 dinner in Villanova.',
+          body:'You’re aiming to catch both: Sofia’s 3:30 in Downingtown, then a quick hop to Max’s 4:45 in West Chester (~15 min). You’ll leave Sofia’s game early and likely arrive after Max’s warm-up — doable but tight. Dinners still split, so pick one: currently Max’s 7:15 in Berwyn, with a 2014 Girls family taking Sofia to her 7:00 in Villanova.',
           steps:[
-            'Lock in the ride/handoff for Sofia from 3:30 game through Villanova dinner',
-            'Check: are dinners drop-off, or are parents expected to stay?',
-            'Sort out who picks each kid up after dinner, and when',
-            'Flip the whole plan if you’d rather be on Sofia’s track instead'
+            'Leave Sofia’s 3:30 game by ~4:20 to make Max’s 4:45 kickoff',
+            'Line up a ride to take Sofia from her 3:30 game to her 7:00 Villanova dinner',
+            'Pick your dinner — currently Max’s 7:15 in Berwyn',
+            'Sort out who picks each kid up after dinner, and when'
           ]
         }
       ]
@@ -213,7 +213,7 @@ const DATA = {
   ],
 
   openItems: [
-    { kind:'ask', who:'Saturday afternoon split',  what:'Decide which kid you’ll be with and line up a teammate’s family to cover the other. Current plan: you’re on Max’s track.' },
+    { kind:'ask', who:'Saturday afternoon — both games',  what:'Aiming to catch Sofia’s 3:30 in Downingtown, then dash to Max’s 4:45 in West Chester (~15 min). Leave Sofia’s game by ~4:20 to make kickoff.' },
     { kind:'ask', who:'Sofia’s ride',           what:'Confirm a 2014 Girls family can carry Sofia from her 3:30 game through her 7:00 dinner at LaScala’s FIRE in Villanova.' },
     { kind:'ask', who:'Dinners — drop-off?',    what:'Are the team dinners drop-off, or are parents expected to stay? Decides the rest of the evening.' },
     { kind:'ask', who:'Dinner pickups',            what:'Sort out who picks up each kid after their dinner, and roughly when.' },
@@ -602,7 +602,7 @@ function notesHTML(){
     ${cardBox(askRows)}
     ${fyis.length?`${sectionTitleHTML(`<span style="${st({color:T.muted,marginRight:6})}">○</span>For your information`,{marginTop:22})}${cardBox(fyiRows)}`:''}
     ${sectionTitleHTML('The plan',{marginTop:22})}
-    <div style="${st({background:T.surface,borderRadius:T.rLg,border:`1px solid ${T.hairline}`,boxShadow:T.shadow,padding:'14px 16px',fontSize:12.5,color:T.muted,lineHeight:1.55})}">Plan updated May 22, 2026 with the revised game schedule. Adjust departure times once both coaches send formal arrival / meeting instructions. Tap any event on the schedule to pull up directions and notes.</div>
+    <div style="${st({background:T.surface,borderRadius:T.rLg,border:`1px solid ${T.hairline}`,boxShadow:T.shadow,padding:'14px 16px',fontSize:12.5,color:T.muted,lineHeight:1.55})}">Plan updated May 23, 2026 — aiming to catch both Saturday afternoon games (Sofia 3:30, then Max 4:45). Adjust departure times once both coaches send formal arrival / meeting instructions. Tap any event on the schedule to pull up directions and notes.</div>
   </div>`;
 }
 function bottomTabsHTML(){
