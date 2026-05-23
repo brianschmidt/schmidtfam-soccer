@@ -94,6 +94,7 @@ const DATA = {
           opponent:'Sporting Athletic Club 2012 NAL', age:'U14 · 2012s',
           venue:'Bayard Rustin HS', field:'Field 4',
           addr:'1100 Shiloh Road, West Chester, PA',
+          result:{ for:3, against:2 },
           note:'Arrive ~11:00 — team wants him there 45 min early.' },
         { id:'sat-break', kind:'travel', lane:'both', start: 13*60+15, end: 15*60,
           title:'Midday break — lunch + regroup',
@@ -471,7 +472,7 @@ function topBarHTML(title){
 function upNextHTML(day){
   const sNow=getNow();
   if(sNow.day!==day.id) return '';
-  const up=day.events.filter(e=>(e.kind==='game'||e.kind==='dinner')&&e.attending!==false&&e.start>=sNow.minute-5);
+  const up=day.events.filter(e=>(e.kind==='game'||e.kind==='dinner')&&e.start>=sNow.minute-5);
   if(!up.length) return '';
   const next=up[0], col=kidColor(next.lane), mins=next.start-sNow.minute;
   const title = `${esc(next.who)} · ${next.kind==='dinner'?esc(next.label||'Team dinner'):esc(next.game)}`;
@@ -484,6 +485,7 @@ function upNextHTML(day){
         <div style="${st({display:'flex',alignItems:'center',gap:8,marginBottom:14,fontFamily:T.fontMono,fontSize:10.5,fontWeight:600,letterSpacing:1.4,textTransform:'uppercase'})}">
           <span style="${st({color:T.muted})}">Up next</span>
           <span style="${st({padding:'3px 8px',background:col.fg,color:'#fff',borderRadius:999,fontSize:10.5,letterSpacing:0.8})}">${fmtCountdown(mins)}</span>
+          ${next.attending===false?`<span style="${st({padding:'3px 8px',background:T.surface2,color:T.muted,borderRadius:999,fontSize:10.5,letterSpacing:0.8})}">Not attending</span>`:''}
         </div>
         <div style="${st({display:'flex',alignItems:'flex-start',gap:14})}">
           <div>
@@ -637,7 +639,7 @@ function desktopHeaderHTML(sNow){
 }
 function desktopUpNextHTML(sNow){
   const day=findDay(sNow.day);
-  const up=day.events.filter(e=>(e.kind==='game'||e.kind==='dinner')&&e.attending!==false&&e.start>=sNow.minute-5);
+  const up=day.events.filter(e=>(e.kind==='game'||e.kind==='dinner')&&e.start>=sNow.minute-5);
   if(!up.length) return '';
   const next=up[0], col=kidColor(next.lane), mins=next.start-sNow.minute;
   const title = `${esc(next.who)} · ${next.kind==='dinner'?esc(next.label||'Team dinner'):esc(next.game)}`;
@@ -648,6 +650,7 @@ function desktopUpNextHTML(sNow){
       <div style="${st({display:'flex',alignItems:'center',gap:8,marginBottom:14})}">
         <span style="${st({fontFamily:T.fontMono,fontSize:10,fontWeight:700,color:T.muted,letterSpacing:1.6,textTransform:'uppercase'})}">Up next</span>
         <span style="${st({padding:'3px 9px',background:col.fg,color:'#fff',borderRadius:999,fontSize:10,letterSpacing:1,fontWeight:700,textTransform:'uppercase',fontFamily:T.fontMono})}">${fmtCountdown(mins)}</span>
+        ${next.attending===false?`<span style="${st({fontFamily:T.fontMono,padding:'3px 9px',background:T.surface2,color:T.muted,borderRadius:999,fontSize:10,letterSpacing:1,fontWeight:700,textTransform:'uppercase'})}">Not attending</span>`:''}
       </div>
       <div style="${st({fontFamily:T.fontMono,fontSize:38,fontWeight:600,color:T.ink,letterSpacing:-1.4,lineHeight:0.95})}">${fmtTime(next.start).replace(/\s(AM|PM)/,'')}<span style="${st({fontSize:14,color:T.muted,marginLeft:6,fontWeight:500})}">${fmtTime(next.start).slice(-2)}</span></div>
       <div style="${st({fontSize:18,fontWeight:600,color:col.deep,letterSpacing:-0.3,lineHeight:1.2,marginTop:12})}">${title}</div>
